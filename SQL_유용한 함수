@@ -1,0 +1,23 @@
+*/RANK() 함수
+
+SELCT age,
+rank() over (order by age) as asc_rank,
+rank() over (order by age desc) as desc_rank,
+dense_rank() over (order by age) as dense_rank, --> 동 순위가 있더라도 빽빽히 다 채움
+percent_rank() over (order by age) as percent_rank
+FROM Customers
+/*
+
+*/LEAD() 함수 - 고객 행동 패턴 분석 (점점 싼 제품 찾는지, 비싼 제품 찾는지)
+SELECT clk_index, user_name, date,
+Lead(clk_index, 1) over (partition by user_name, date order by clk_index) next_click
+FROM clicks
+ORDER BY 3,1
+/*
+
+*/LAG() 함수 - LEAD()와 반대로 역으로 찾아가는 방식
+SELECT clk_index, user_name, date,
+LAG(clk_index, 1) over (partition by user_name, date order by clk_index) next_click
+FROM clicks
+ORDER BY 3,1
+/*
