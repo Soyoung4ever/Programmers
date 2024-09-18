@@ -1,0 +1,75 @@
+-- 조건절 
+IF
+SELECT PRICE
+IF(PRICE>=10000,'고가'.'저가') AS '가격구분'
+FROM PRODUCT
+
+
+IFNULL: 값이 NULL일 때 원하는 인자로 채워줌
+SELECT USER_NAME, IFNULL(DATE, 20231104)
+AS DATE
+FROM ORDERS_V3
+
+EX)
+SELECT name,
+IF(managing in ('스포츠','리빙'),'3층','2층') as floor
+IF(off Like '%토%', '토요일 휴무', '토요일 근무') as sat_off
+FROM managers
+
+*IF절 중첩도 가능
+SELECT product_id
+IF(price > 10000, '고가', IF(price>4000,'중가',저가')) as price_v2
+FROM products
+
+그러나 구간이 너무 많아질 때면 CASE WHEN 쓰는게 용이
+
+예1)
+SELECT price,
+  CASE WHEN price > 10000 THEN '고가'
+  WHEN (price <= 10000 AND price > 4000) THEN '중가'
+  ELSE '저가'
+  END AS price_class
+FROM products_B
+
+예2) 특정 컬럼을 기준으로 그룹을 분류
+SELECT date,
+  CASE date
+  WHEN '20231015' THEN '첫째날'
+  WHEN '20230303' THEN '둘째날'
+  END AS 기타
+FROM users
+
+예3) 필터링 조건을 쉽게 바꿀 수 있음 where에 쓰면
+SELECT *
+FROM products
+WHERE (CASE WHEN category = '키즈' THEN 1
+        WHEN name like '%어린이%' THEN 1
+        ELSE 3
+        END
+) = 2
+
+예4) ORDER BY 에 쓰기
+SELECT *
+FROM products
+ORDER BY (
+  CASE 
+  WHEN category = '디지털' THEN 1
+  WHEN category = '주방용품' THEN 2
+  WHEN name like '%보호대%' THEN 3
+  ELSE 4
+  END
+) DESC
+
+예5) CASE WHEN 중첩
+SELECT category, name, date, price,
+CASE date WHEN '20231014' THEN
+          CASE WHEN price > 5000 THEN '첫째날=고가'
+          ELSE '첫째날=저가'
+          END
+    ELSE  CASE WHEN price > 5000 THEN '둘째날=고가'
+          ELSE '둘째날=저가'
+          END
+END AS date_price_class
+
+FROM clicks c INNER JOIN products p
+  on c.product_id = p.product_id
